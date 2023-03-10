@@ -6,7 +6,7 @@
   tasks:
    - name: Download open JDK
      become: yes
-     apt:
+     yum:
       name: openjdk-11-jre-headless
       state: present
   
