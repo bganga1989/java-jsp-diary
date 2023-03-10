@@ -4,7 +4,7 @@
   become: true
   vars:
     - tomcat_url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.7/bin/apache-tomcat-10.1.7.tar.gz
-    - tomcat_package: apache-tomcat-10.1.1.7
+    - tomcat_package: apache-tomcat-10.1.7
 
   tasks:
   - name: install java
@@ -24,7 +24,7 @@
        remote_src: yes
 
   - name: start tomcat service
-    shell: nohup /home/ec2-user/apache-tomcat-10.1.1.7/bin/startup.sh
+    shell: nohup /home/ec2-user/apache-tomcat-10.1.7/bin/startup.sh
     
   - name: Connect to Tomcat server on port 8080 and check status 200 - Try 5 times
      tags: test
