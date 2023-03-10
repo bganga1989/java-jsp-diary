@@ -25,3 +25,12 @@
 
   - name: start tomcat service
     shell: nohup /home/ec2-user/apache-tomcat-10.1.1.7/bin/startup.sh
+    
+  - name: Connect to Tomcat server on port 8080 and check status 200 - Try 5 times
+     tags: test
+     uri:
+       url: http://3.110.214.85:8080
+     register: result
+     until: "result.status == 200"
+     retries: 5
+     delay: 10
