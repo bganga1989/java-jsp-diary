@@ -1,15 +1,14 @@
 ---
 - name: Download Tomcat9 from tomcat.apache.org
   hosts: 172.31.35.192
-  remote_user: ec2-user
-  become: yes
   vars:
     download_url: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.73/bin/apache-tomcat-9.0.73.tar.gz
   tasks:
-   - name: Install JAVA
-      yum:
-        name: default-jdk
-        state: present
+   - name: Download open JDK
+     become: yes
+     apt:
+      name: openjdk-11-jre-headless
+      state: present
   
    - name: validate if Java is availble 
      shell: 
