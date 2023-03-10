@@ -7,7 +7,7 @@
    - name: Download open JDK
      become: yes
      yum:
-      name: java-openjdk11
+      name: amazon-linux-extras install java-openjdk11
       state: present
   
    - name: validate if Java is availble 
