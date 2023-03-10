@@ -1,0 +1,27 @@
+---
+- name: install tomcat server
+  hosts: webappserver
+  become: true
+  vars:
+    - tomcat_url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.7/bin/apache-tomcat-10.1.7.tar.gz
+    - tomcat_package: apache-tomcat-10.1.1.7
+
+  tasks:
+  - name: install java
+    yum:
+     name: java
+     state: latest
+  
+  - name: download tomcat server packages
+    get_url:
+       url: "{{ tomcat_url }}"
+       dest: /home/ec2-user
+
+  - name: extract tomcat
+    unarchive: 
+       src: /home/ec2-user/{{ tomcat_package }}.tar.gz
+       dest: /home/ec2-user
+       remote_src: yes
+
+  - name: start tomcat service
+    shell: nohup /home/ec2-user/apache-tomcat-10.1.1.7/bin/startup.sh
