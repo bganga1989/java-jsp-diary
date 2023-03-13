@@ -43,9 +43,9 @@ pipeline{
                 version: '0.0.1'
             }
         }
-        stage('Deploy to Tomcat Server'){
+        stage('Execute Ansible'){
             steps{
-                deploy adapters: [tomcat8(credentialsId: 'tomcat-credentials', path: '', url: 'http://65.1.133.61:8080/')], contextPath: null, war: '**/*.war'
+                ansiblePlaybook credentialsId: 'privatekey', disableHostKeyChecking: true, installation: 'ansible', inventory: '/etc/ansible/hosts', playbook: '/etc/ansible/deploy.yml'
             }
         }
     }
