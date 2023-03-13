@@ -50,11 +50,6 @@ pipeline{
             steps{
                 ansiblePlaybook credentialsId: 'privatekey', disableHostKeyChecking: true, installation: 'ansible', inventory: '/etc/ansible/hosts', playbook: '/etc/ansible/deploy.yml'
             }
-        } 
-        stage('Deploy to Tomcat Server'){
-            steps{
-                deploy adapters: [tomcat8(credentialsId: 'tomcat-credentials', path: '', url: 'http://3.110.214.85:8080/')], contextPath: 'java-jsp-diary', war: '**/*.war'
-            }
-        }    
+        }     
     }
 }
