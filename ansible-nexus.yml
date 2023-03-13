@@ -1,0 +1,12 @@
+---
+- name: download artifactory 
+  hosts: webappserver
+  become: true
+
+  tasks:
+  - name: Download artifact 
+    get_url:
+      url: http://65.2.169.22:8081/repository/java-jsp-diary/com/yusufsezer/java-jsp-diary/0.0.1/java-jsp-diary-0.0.1.war
+      dest: /home/ec2-user
+      url_username: admin
+      url_password: admin
