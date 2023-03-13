@@ -26,27 +26,35 @@ pipeline{
         }
         stage('Upload War to Nexus'){
             steps{
-                nexusArtifactUploader artifacts: [
-                    [
-                        artifactId: 'java-jsp-diary',
-                        classifier: '',
-                        file: 'target/java-jsp-diary.war',
-                        type: 'war'
-                    ]
-                ],
-                credentialsId: 'nexus3',
-                groupId: 'com.yusufsezer',
-                nexusUrl: '65.2.169.22:8081',
-                nexusVersion: 'nexus3',
-                protocol: 'http',
-                repository: 'java-jsp-diary',
-                version: '0.0.1'
+                script{
+                    def readPomVersion = readMavenPom file: 'pom.xml'
+                    nexusArtifactUploader artifacts: [
+                        [
+                            artifactId: 'java-jsp-diary',
+                            classifier: '',
+                            file: 'target/java-jsp-diary.war',
+                            type: 'war'
+                        ]
+                    ],
+                    credentialsId: 'nexus3',
+                    groupId: 'com.yusufsezer',
+                    nexusUrl: '65.2.169.22:8081',
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    repository: 'java-jsp-diary',
+                    version: "${readPomVersion.version}"
+                }
             }
         }
         stage('Execute Ansible'){
             steps{
                 ansiblePlaybook credentialsId: 'privatekey', disableHostKeyChecking: true, installation: 'ansible', inventory: '/etc/ansible/hosts', playbook: '/etc/ansible/deploy.yml'
             }
-        }
+        } 
+        stage('Deploy to Tomcat Server'){
+            steps{
+                deploy adapters: [tomcat8(credentialsId: 'tomcat-credentials', path: '', url: 'http://3.110.214.85:8080/')], contextPath: 'java-jsp-diary', war: '**/*.war'
+            }
+        }    
     }
 }
