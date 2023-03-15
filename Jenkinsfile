@@ -3,15 +3,21 @@ pipeline{
     tools{
         maven 'maven-3.9'
     }
+    environment{
+        ArtifactId = readMavenPom().getArtifactId()
+        Version = readMavenPom().getVersion()
+        Name = readMavenPom().getName()
+        GroupId = readMavenPom().getGroupId()
+    }
     stages{
         stage('SCM Checkout'){
             steps{
                 git 'https://github.com/bganga1989/java-jsp-diary.git'
             }
         }
-        stage('Build'){
+        stage ('Build'){
             steps{
-                sh 'mvn clean package'
+                sh 'mvn clean install package'
             }
         }
         stage('SonarQube analysis'){
@@ -24,26 +30,33 @@ pipeline{
                 }
             }
         }
-        stage('Upload War to Nexus'){
+        stage ('Publish to Nexus'){
             steps{
                 script{
-                    def readPomVersion = readMavenPom file: 'pom.xml'
-                    nexusArtifactUploader artifacts: [
-                        [
-                            artifactId: 'java-jsp-diary',
-                            classifier: '',
-                            file: 'target/java-jsp-diary.war',
-                            type: 'war'
-                        ]
-                    ],
-                    credentialsId: 'nexus3',
-                    groupId: 'com.yusufsezer',
-                    nexusUrl: '65.2.169.22:8081',
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    repository: 'java-jsp-diary',
-                    version: "${readPomVersion.version}"
+                    script{
+                        def NexusRepo = Version.endsWith("SNAPSHOT") ? "java-jsp-diary-SNAPSHOT" : "java-jsp-diary"
+                        nexusArtifactUploader artifacts:
+                        [[artifactId: "${ArtifactId}",
+                        classifier: '',
+                        file: "target/${ArtifactId}-${Version}.war",
+                        type: 'war']],
+                        credentialsId: 'nexus3',
+                        groupId: "${GroupId}",
+                        nexusUrl: '65.2.169.22:8081',
+                        nexusVersion: 'nexus3',
+                        protocol: 'http',
+                        repository: "${NexusRepo}",
+                        version: "${Version}"
+                    }
                 }
+            }
+        }
+        stage ('Print Environment variables'){
+            steps{
+                echo "Artifact ID is '${ArtifactId}'"
+                echo "Version is '${Version}'"
+                echo "GroupID is '${GroupId}'"
+                echo "Name is '${Name}'"
             }
         }
     }
