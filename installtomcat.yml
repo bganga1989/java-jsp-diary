@@ -1,0 +1,16 @@
+- hosts: tomcat
+  become: true
+  vars:
+    tomcat_version: 9.0.73
+    
+    tomcat_permissions_production: False
+    
+    tomcat_users:
+      - username: "tomcat"
+        password: "tomcat"
+        roles: "tomcat,admin,manager,manager-gui"
+      - username: "tomcat2"
+        password: "tomcat2"
+        roles: "tomcat"
+  roles:
+    - role: zaxos.tomcat-ansible-role
