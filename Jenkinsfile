@@ -33,21 +33,19 @@ pipeline{
         stage ('Publish to Nexus'){
             steps{
                 script{
-                    script{
-                        def NexusRepo = Version.endsWith("SNAPSHOT") ? "java-jsp-diary-SNAPSHOT" : "java-jsp-diary"
-                        nexusArtifactUploader artifacts:
-                        [[artifactId: "${ArtifactId}",
-                        classifier: '',
-                        file: "target/${ArtifactId}-${Version}.war",
-                        type: 'war']],
-                        credentialsId: 'nexus3',
-                        groupId: "${GroupId}",
-                        nexusUrl: '65.2.169.22:8081',
-                        nexusVersion: 'nexus3',
-                        protocol: 'http',
-                        repository: "${NexusRepo}",
-                        version: "${Version}"
-                    }
+                    def NexusRepo = Version.endsWith("SNAPSHOT") ? "java-jsp-diary-SNAPSHOT" : "java-jsp-diary"
+                    nexusArtifactUploader artifacts:
+                    [[artifactId: "${ArtifactId}",
+                    classifier: '',
+                    file: "target/${ArtifactId}-${Version}.war",
+                    type: 'war']],
+                    credentialsId: 'nexus3',
+                    groupId: "${GroupId}",
+                    nexusUrl: '65.2.169.22:8081',
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    repository: "${NexusRepo}",
+                    version: "${Version}"
                 }
             }
         }
@@ -57,6 +55,26 @@ pipeline{
                 echo "Version is '${Version}'"
                 echo "GroupID is '${GroupId}'"
                 echo "Name is '${Name}'"
+            }
+        }
+        Deploying the build artifact to Apache Tomcat
+        stage ('Deploy to Tomcat'){
+            steps{
+                echo "Deploying ...."
+                sshPublisher(publishers: 
+                [sshPublisherDesc(
+                    configName: 'tomcat-server', 
+                    transfers: [
+                        sshTransfer(
+                            cleanRemote:false,
+                            execCommand: 'ansible-playbook /opt/playbooks/downloadanddeploy_as_tomcat_user.yaml -i /opt/playbooks/hosts',
+                            execTimeout: 120000       
+                        )
+                    ], 
+                    usePromotionTimestamp: false, 
+                    useWorkspaceInPromotion: false, 
+                    verbose: false)
+                    ])
             }
         }
     }
