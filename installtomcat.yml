@@ -8,9 +8,9 @@
     tomcat_users:
       - username: "tomcat"
         password: "tomcat"
-        roles: "tomcat,admin,manager,manager-gui"
+        roles: "manager-gui,manager-script,manager-status,manager-jmx"
       - username: "tomcat2"
         password: "tomcat2"
-        roles: "tomcat"
+        roles: "manager-gui"
   roles:
     - role: zaxos.tomcat-ansible-role
