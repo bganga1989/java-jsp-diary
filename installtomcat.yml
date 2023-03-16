@@ -1,4 +1,4 @@
-- hosts: tomcat
+- hosts: webappserver
   become: true
   vars:
     tomcat_version: 9.0.73
