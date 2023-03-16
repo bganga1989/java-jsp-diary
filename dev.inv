@@ -1,2 +1,2 @@
 [webappserver]
-172.31.35.192 ansible_user=ec2-user 
+172.31.5.90 ansible_user=ec2-user 
