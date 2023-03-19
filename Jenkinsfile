@@ -45,7 +45,7 @@ pipeline{
                     transfers: [
                         sshTransfer(
                             cleanRemote: false,
-                            execCommand:'ansible-playbook /home/ec2-user/downloadanddeploy.yml -i ./aws_ec2.yaml --private-key=ec2.pem',
+                            execCommand:'ansible-playbook downloadanddeploy.yml -i ./aws_ec2.yaml --private-key=ec2.pem',
                             execTimeout: 120000
                         )
                     ],
