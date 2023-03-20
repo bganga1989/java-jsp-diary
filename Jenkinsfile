@@ -36,7 +36,7 @@ pipeline{
                }
            }
        }
-       stage ('Deploy'){
+       stage ('Deploy with Ansible'){
             steps{
                 echo "Deploying ...."
                 sshPublisher(publishers:
@@ -45,7 +45,7 @@ pipeline{
                     transfers: [
                         sshTransfer(
                             cleanRemote: false,
-                            execCommand:'ansible-playbook /etc/ansible/downloadanddeploy.yml -i ./aws_ec2.yaml --private-key=/etc/ansible/ec2.pem',
+                            execCommand:'ansible-playbook --vault-password-file=/etc/ansible/my_pass /etc/ansible/deploy.yml -i ./aws_ec2.yaml --private-key=/etc/ansible/ec2.pem',
                             execTimeout: 120000
                         )
                     ],
