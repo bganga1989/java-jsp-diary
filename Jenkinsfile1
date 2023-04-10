@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+    tools{
+        maven 'maven-3.9'
+    }
+    environment {
+        DOCKER_TAG = gitVersion()
+    }
+
+    stages {
+        stage('SCM Checkout') {
+            steps {
+                git 'https://github.com/bganga1989/java-jsp-diary.git'
+            }
+        }
+        stage('Maven Build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+        stage('Docker Build'){
+            steps{
+                sh "docker build . -t gb443330/java-jsp-diary:${DOCKER_tag}"
+            }
+        }
+        stage('DockerHub Push'){
+            steps{
+                withCredentials([string(credentialsId: 'dockerHub', variable: 'dockerHubPwd')]) {
+                    sh "docker login -u gb443330 -p ${dockerHubPwd}"
+                }
+                sh "docker push gb443330/java-jsp-diary:${DOCKER_tag}"
+            }
+        }
+        stage('Docker deploy'){
+            steps{
+                ansiblePlaybook credentialsId: 'dev-server', disableHostKeyChecking: true, extras: "-e DOCKER_TAG=${DOCKER_tag}", installation: 'ansible', inventory: 'dev.inv', playbook: 'docker-deploy.yml'
+            }
+        }
+    }
+}
+def gitVersion(){
+    def commithash = sh label: "", returnStdout: true, script: 'git rev-parse --short HEAD'
+    return commithash
+}
