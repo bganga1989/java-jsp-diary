@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: java-jsp-diary
+  labels:
+    app: java-jsp-diary
+spec:
+  containers:
+    - name: java-jsp-diary
+      image: gb443330/java-jsp-diary:v1
+      ports:
+        - containerPort: 8080
